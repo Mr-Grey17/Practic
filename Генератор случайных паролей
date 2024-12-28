@@ -1,29 +1,56 @@
 import random
-# 1. Создаем списки символов
-lowercase_letters = list("abcdefghijklmnopqrstuvwxyz")
-uppercase_letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-digits = list("0123456789")
-special_chars = list("!@#$%^&*()")
 
-# 2. Объединяем списки в один общий список
-all_chars = lowercase_letters + uppercase_letters + digits + special_chars
+def generate_password():
+    """Генерирует пароль с учетом выбора пользователя."""
 
-# 3. Запрашиваем длину пароля у пользователя
-try:
-    password_length = int(input("Введите желаемую длину пароля: "))
-except ValueError:
-    print("Ошибка: Введите целое число для длины пароля.")
-    exit() # Прерываем выполнение, если ввод некорректный
+    lowercase_letters = list("abcdefghijklmnopqrstuvwxyz")
+    uppercase_letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    digits = list("0123456789")
+    special_chars = list("!@#$%^&*()")
 
-if password_length <= 0:
-    print("Ошибка: Длина пароля должна быть положительной.")
-    exit() # Прерываем выполнение, если длина не положительная
+    # Спрашиваем пользователя, какие типы символов включить
+    include_lowercase = input("Включить строчные буквы? (y/n): ").lower() == 'y'
+    include_uppercase = input("Включить прописные буквы? (y/n): ").lower() == 'y'
+    include_digits = input("Включить цифры? (y/n): ").lower() == 'y'
+    include_special = input("Включить специальные символы? (y/n): ").lower() == 'y'
 
-# 4. Генерируем пароль
-password = ""
-for i in range(password_length):
-    random_char = random.choice(all_chars) # Выбираем случайный символ
-    password += random_char # Добавляем символ в пароль
+    # Проверяем, что выбраны хотя бы какие-то символы
+    if not any([include_lowercase, include_uppercase, include_digits, include_special]):
+        print("Пожалуйста, выберите хотя бы один тип символов.")
+        return None
 
-# 5. Выводим сгенерированный пароль
-print("Сгенерированный пароль:", password)
+    # Формируем список доступных символов на основе выбора пользователя
+    available_chars = []
+    if include_lowercase:
+        available_chars += lowercase_letters
+    if include_uppercase:
+        available_chars += uppercase_letters
+    if include_digits:
+        available_chars += digits
+    if include_special:
+        available_chars += special_chars
+    
+    # Проверяем, что список символов не пустой
+    if not available_chars:
+        print("Не удалось сгенерировать пароль, так как не выбраны символы.")
+        return None
+
+    try:
+        password_length = int(input("Введите желаемую длину пароля: "))
+        if password_length <= 0:
+            print("Длина пароля должна быть положительным числом.")
+            return None
+
+        password = ""
+        for i in range(password_length):
+            random_char = random.choice(available_chars)
+            password += random_char
+        return password
+    except ValueError:
+        print("Ошибка: Введите целое число для длины пароля.")
+        return None
+
+if __name__ == "__main__":
+    generated_password = generate_password()
+    if generated_password:
+        print("Сгенерированный пароль:", generated_password)
